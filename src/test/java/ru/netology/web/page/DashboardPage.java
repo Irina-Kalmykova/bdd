@@ -40,7 +40,6 @@ public class DashboardPage {
     }
 
     private SelenideElement getCard(DataHelper.CardInfo cardInfo) {
-        assertTrue(cards.asFixedIterable().stream().allMatch(el -> el.has(Condition.cssClass("className"))));
         return cards.findBy(Condition.attribute("data-test-id", cardInfo.getTestID()));
     }
 
