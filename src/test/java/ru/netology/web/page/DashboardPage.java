@@ -5,10 +5,10 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import ru.netology.web.data.DataHelper;
 
-import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DashboardPage {
 
@@ -27,6 +27,11 @@ public class DashboardPage {
         return extractBalance(text);
     }
 
+    public TransferPage selectCardToTransfer(DataHelper.CardInfo cardInfo) {
+        getCard(cardInfo).$("button").click();
+        return new TransferPage();
+    }
+
     private int extractBalance(String text) {
         var start = text.indexOf(balanceStart);
         var finish = text.indexOf(balanceFinish);
@@ -34,17 +39,16 @@ public class DashboardPage {
         return Integer.parseInt(value);
     }
 
-    public TransferPage selectCardToTransfer(DataHelper.CardInfo cardInfo) {
-        getCard(cardInfo).$("button").click();
-        return new TransferPage();
-    }
-
     private SelenideElement getCard(DataHelper.CardInfo cardInfo) {
-        return cards.findBy(Condition.attribute("data-test-id", cardInfo.getTestId()));
+        assertTrue(cards.asFixedIterable().stream().allMatch(el -> el.has(Condition.cssClass("className"))));
+        return cards.findBy(Condition.attribute("data-test-id", cardInfo.getTestID()));
     }
 
     public void reloadDashboardPage() {
         reloadButton.click();
         heading.shouldBe(visible);
+    }
+    public void checkCardBalance(DataHelper.CardInfo cardInfo, String balance) {
+        getCard(cardInfo).shouldBe(Condition.visible).shouldHave(Condition.text(balanceStart + balance + balanceFinish));
     }
 }
